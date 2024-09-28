@@ -4,7 +4,7 @@ import { DetailComponent } from './components/detail/detail.component';
 import { FormComponent } from './components/form/form.component';
 import { ListComponent } from './components/list/list.component';
 
-const routes: Routes = [
+export const routes: Routes = [
   { path: '', title: 'Sessions', component: ListComponent },
   { path: 'detail/:id', title: 'Sessions - detail', component: DetailComponent },
   { path: 'create', title: 'Sessions - create', component: FormComponent },

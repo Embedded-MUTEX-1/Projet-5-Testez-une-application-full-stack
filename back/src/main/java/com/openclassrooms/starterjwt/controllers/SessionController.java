@@ -19,6 +19,7 @@ import java.util.List;
 public class SessionController {
     private final SessionMapper sessionMapper;
     private final SessionService sessionService;
+    private SessionDto sessionDto;
 
 
     public SessionController(SessionService sessionService,
@@ -51,6 +52,7 @@ public class SessionController {
 
     @PostMapping()
     public ResponseEntity<?> create(@Valid @RequestBody SessionDto sessionDto) {
+        this.sessionDto = sessionDto;
         log.info(sessionDto);
 
         Session session = this.sessionService.create(this.sessionMapper.toEntity(sessionDto));
@@ -71,7 +73,7 @@ public class SessionController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<?> save(@PathVariable("id") String id) {
+    public ResponseEntity<?> delete(@PathVariable("id") String id) {
         try {
             Session session = this.sessionService.getById(Long.valueOf(id));
 

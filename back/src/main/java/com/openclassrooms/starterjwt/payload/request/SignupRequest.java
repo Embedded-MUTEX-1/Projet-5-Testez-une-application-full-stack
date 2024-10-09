@@ -2,8 +2,12 @@ package com.openclassrooms.starterjwt.payload.request;
 
 import javax.validation.constraints.*;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class SignupRequest {
   @NotBlank

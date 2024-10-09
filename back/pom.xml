@@ -21,6 +21,20 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.13.2</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+			<version>2.2.220</version>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
@@ -86,6 +100,22 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<argLine>${failsafeArgLine}</argLine>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -108,7 +138,12 @@
 				<version>0.8.5</version>
 				<configuration>
 					<excludes>
-						<exclude>com/openclassrooms/starterjwt/dto/*.class</exclude>
+						<exclude>com/openclassrooms/starterjwt/dto/**</exclude>
+						<exclude>com/openclassrooms/starterjwt/exception/**</exclude>
+						<exclude>com/openclassrooms/starterjwt/mapper/**</exclude>
+						<exclude>com/openclassrooms/starterjwt/models/**</exclude>
+						<exclude>com/openclassrooms/starterjwt/payload/**</exclude>
+						<exclude>com/openclassrooms/starterjwt/SpringBootSecurityJwtApplication.class</exclude>
 					</excludes>
 				</configuration>
 				<executions>
@@ -124,6 +159,60 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+					</execution>
+
+					<execution>
+						<id>pre-integration-test</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<configuration>
+							<destFile>${project.build.directory}/coverage-reports/jacoco-it.exec</destFile>
+							<propertyName>failsafeArgLine</propertyName>
+						</configuration>
+					</execution>
+					<execution>
+						<id>post-integration-test</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>${project.build.directory}/coverage-reports/jacoco-it.exec</dataFile>
+							<outputDirectory>${project.reporting.outputDirectory}/jacoco-it</outputDirectory>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>merge</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<fileSets>
+								<fileSet implementation="org.apache.maven.shared.model.fileset.FileSet">
+									<directory>${project.basedir}</directory>
+									<includes>
+										<include>**/*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+							<destFile>target/jacoco/allTest.exec</destFile>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>post-merge-report</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+						<configuration>
+							<dataFile>target/jacoco/allTest.exec</dataFile>
+							<outputDirectory>target/jacoco/</outputDirectory>
+						</configuration>
 					</execution>
 
 					<execution>

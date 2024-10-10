@@ -78,8 +78,26 @@ public class SessionControllerIT {
     }
 
     @Test
+    public void givenNoUser_whenUserRequestParticipate_thenReturnBadRequest() throws Exception {
+        this.mockMvc.perform(post("/api/session/1/participate/5"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void givenNoSession_whenUserRequestParticipate_thenReturnBadRequest() throws Exception {
+        this.mockMvc.perform(post("/api/session/5/participate/1"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     public void whenUserRequestNoLongerParticipate_thenUserDisassociatedToSession() throws Exception {
         this.mockMvc.perform(delete("/api/session/2/participate/1"))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    public void givenNoSession_whenUserRequestNoLongerParticipate_thenReturnBadRequest() throws Exception {
+        this.mockMvc.perform(delete("/api/session/5/participate/1"))
+                .andExpect(status().isNotFound());
     }
 }

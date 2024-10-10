@@ -79,4 +79,15 @@ public class AuthControllerIT {
                 .andExpect(status().isOk())
                 .andExpect(content().string("{\"message\":\"User registered successfully!\"}"));
     }
+
+    @Test
+    public void givenUserExist_whenRequestRegister_thenReturnBadRequest() throws Exception {
+        String json = objectMapper.writeValueAsString(new SignupRequest("test1@test.com", "Toto", "Titi", "123456789"));
+
+        this.mockMvc.perform(post("/api/auth/register")
+                        .contentType(APPLICATION_JSON)
+                        .content(json)
+                )
+                .andExpect(status().isBadRequest());
+    }
 }

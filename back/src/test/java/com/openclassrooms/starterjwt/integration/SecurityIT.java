@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.integration;
 
+import com.openclassrooms.starterjwt.payload.request.LoginRequest;
 import com.openclassrooms.starterjwt.security.jwt.JwtUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,9 +21,10 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Date;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @TestPropertySource("classpath:application-test.properties")
 @ExtendWith(SpringExtension.class)
@@ -59,6 +61,12 @@ public class SecurityIT {
     void givenSecurityContext_whenRequestSessionWithoutToken_thenReturnOk() throws Exception {
         this.mockMvc.perform(get("/api/session/1")
                         .header("Authorization", "Bearer " + "Bad"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void whenUserRequestDataWithoutAuthHeader_thenReturnUnauthorized() throws Exception {
+        this.mockMvc.perform(get("/api/session"))
                 .andExpect(status().isUnauthorized());
     }
 }

@@ -1,11 +1,9 @@
 package com.openclassrooms.starterjwt.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openclassrooms.starterjwt.dto.SessionDto;
-import com.openclassrooms.starterjwt.models.Session;
 import com.openclassrooms.starterjwt.models.Teacher;
 import com.openclassrooms.starterjwt.models.User;
-import com.openclassrooms.starterjwt.services.SessionService;
+import com.openclassrooms.starterjwt.services.TeacherService;
 import com.openclassrooms.starterjwt.services.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,23 +18,22 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class UserControllerTest {
+public class TeacherControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private UserService userService;
+    private TeacherService teacherService;
 
-    private User user;
+    private Teacher teacher;
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -48,45 +45,40 @@ public class UserControllerTest {
 
     @BeforeEach
     public void init() {
-        user = new User(1L, "test@tets.com", "Toto", "Titi", "123456789", false, LocalDateTime.now(), LocalDateTime.now());
+        teacher = new Teacher(1L, "Toto", "Titi",  LocalDateTime.now(), LocalDateTime.now());
     }
 
     @Test
-    public void givenNoUser_whenFindUser_thenReturnNotFound() throws Exception {
-        when(userService.findById(1L)).thenReturn(null);
+    public void givenNoTeacher_whenFindTeacher_thenReturnNotFound() throws Exception {
+        when(teacherService.findById(1L)).thenReturn(null);
 
-        this.mockMvc.perform(get("/api/user/1"))
+        this.mockMvc.perform(get("/api/teacher/1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void whenFindUserWithBadParam_thenReturnBadRequest() throws Exception {
+    public void whenFindTeacherWithBadParam_thenReturnBadRequest() throws Exception {
 
-        this.mockMvc.perform(get("/api/user/bad"))
+        this.mockMvc.perform(get("/api/teacher/bad"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void givenNoUser_whenDeleteUser_thenReturnNotFound() throws Exception {
-        when(userService.findById(1L)).thenReturn(null);
+    public void whenFindTeacher_thenReturnTeacher() throws Exception {
+        when(teacherService.findById(1L)).thenReturn(teacher);
 
-        this.mockMvc.perform(delete("/api/user/1"))
-                .andExpect(status().isNotFound());
+        this.mockMvc.perform(get("/api/teacher/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(teacher.getId()));
     }
 
     @Test
-    @WithMockUser(username = "test2@test.com")
-    public void whenDeleteUserWithDifferentUser_thenReturnUnauthorized() throws Exception {
-        when(userService.findById(1L)).thenReturn(user);
+    public void whenFindAllTeacher_thenReturnAllTeacher() throws Exception {
+    when(teacherService.findAll()).thenReturn(Arrays.asList(teacher, teacher));
 
-        this.mockMvc.perform(delete("/api/user/1"))
-                .andExpect(status().isUnauthorized());
-    }
-
-    @Test
-    public void whenDeleteUserWithBadParam_thenReturnBadRequest() throws Exception {
-
-        this.mockMvc.perform(delete("/api/user/bad"))
-                .andExpect(status().isBadRequest());
+        this.mockMvc.perform(get("/api/teacher"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(teacher.getId()))
+                .andExpect(jsonPath("$[1].id").value(teacher.getId()));
     }
 }

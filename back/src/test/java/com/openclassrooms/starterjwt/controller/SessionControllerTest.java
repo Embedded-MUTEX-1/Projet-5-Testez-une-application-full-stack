@@ -53,9 +53,6 @@ public class SessionControllerTest {
     @MockBean
     private SessionService sessionService;
 
-    @MockBean
-    private UserService userService;
-
     private final long USER_ID = 1L;
     private final long SESSION_ID = 1L;
 
